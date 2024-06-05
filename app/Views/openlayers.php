@@ -19,12 +19,16 @@
     <script>
         const projection = ol.proj.get('EPSG:4326');
 
-        const vectorSource = new ol.source.Vector({
-            // projection: projection,
-            // url: '<?= base_url() ?>assets/us-states.geojson',
-            // format: new ol.format.GeoJSON(),
-                url: 'https://openlayers.org/data/vector/ecoregions.json',
-                format: new ol.format.GeoJSON()
+        const cekSource = new ol.source.Vector({
+            projection: projection,
+            url: '<?= base_url() ?>assets/pharmacies.geojson',
+            format: new ol.format.GeoJSON(),
+        });
+
+        const usStatesSource = new ol.source.Vector({
+            projection: projection,
+            url: '<?= base_url() ?>assets/us-states.geojson',
+            format: new ol.format.GeoJSON(),
         });
 
         const view = new ol.View({
@@ -38,11 +42,23 @@
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 }),
-                new ol.layer.VectorImage({
-                    source: vectorSource,
-                    style: {
-                        'fill-color': ['string', ['get', 'COLOR'], '#eee'],
-                    },
+                new ol.layer.Group({
+                    layers: [
+                        new ol.layer.VectorImage({
+                            source: usStatesSource,
+                        }),
+                        new ol.layer.VectorImage({
+                            minZoom: 8,
+                            source: cekSource,
+                            style: new ol.style.Style({
+                                image: new ol.style.Icon({
+                                    src: 'https://openlayers.org/en/v4.6.5/examples/data/icon.png',
+                                    scale: 0.8,
+                                    anchor: [0.5, 1]
+                                })
+                            })
+                        }),
+                    ]
                 })
             ],
             view: view,
